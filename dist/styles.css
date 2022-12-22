@@ -2,6 +2,16 @@ body {
   font-family: verdana;
 }
 
+nav {
+  display: flex;
+  justify-content: space-around;
+}
+
+
+nav a.selected {
+  border: solid 2px plum;
+}
+
 input, button {
   height: 2rem;
 }
@@ -13,5 +23,11 @@ form {
 
 form > * {
  margin: 0.5rem;
+}
+
+#card {
+  border: 1px solid black;
+  margin: 1rem;
+  padding: 1rem;
 }
 

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { HashRouter, Routes, Route, Link} from 'react-router-dom';
 
 
+
 const Posts = (props)=> {
   const posts = props.posts;
  
@@ -15,9 +16,18 @@ const Posts = (props)=> {
        //console.log(props.posts)
         posts.map( post => {
           return(
+            <div id="card">
             <li key={post._id}>
-            <Link to={`/posts/${post._id}`}>{ post.location }</Link>
+            <Link to={`/posts/${post._id}`}>{ post.title }</Link>
+            <p><b>Price:</b> { post.price }</p>
+            <p><b>Description:</b> { post.description }</p>
+            <p><b>Created at:</b>{ post.createdAt }</p>
+            <p><b>Updated at:</b>{ post.updatedAt }</p>
+            <p><b>Author:</b> { post.author.username }</p>
+            {/* {post.isAuthor ? <button>Edit</button> : null} */}
+            {/* {post.isAuthor ? <button>Delete</button> : null} */}
             </li>
+            </div>
           );
         })
         }
@@ -47,6 +57,9 @@ const Register = () => {
 })
 .then(response => response.json())
 .then(result => {
+  if(!result.success){
+    throw result.error;
+  }
   const token = result.data.token;
   console.log(token);
 })
@@ -79,6 +92,7 @@ const Login = () => {
   const [loginUsername, setLoginUsername] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [user, setUser] = useState({});
+  const [token, setToken] = useState(null);
 
   const loginBtn = (ev) => {
     ev.preventDefault();
@@ -96,6 +110,10 @@ const Login = () => {
     })
   }).then(response => response.json())
     .then(result => {
+      if(!result.success){
+        console.log(result);
+        throw result.error;
+      }
       const token = result.data.token;
       fetch('https://strangers-things.herokuapp.com/api/2209-FTB-ET-WEB-AM/users/me', {
       headers: {
@@ -126,6 +144,7 @@ const Login = () => {
       />
       <input 
       placeholder='password'
+      type="password"
       value={ loginPassword }
       onChange = { ev => setLoginPassword(ev.target.value) }
        />
@@ -134,6 +153,11 @@ const Login = () => {
   </div>
   )
 }
+
+const Home = () => {
+  console.log("hello");
+}
+
 
 
 // for my morning self: how to loop over data and then loop over posts?
@@ -151,16 +175,20 @@ const App = ()=> {
 
   return (
     <div>
-      <h1>Strangers Things</h1>
+      <h1 align="center">Strangers Things</h1>
       <nav>
-        <Link to='/posts'>Posts ({ posts.length })</Link>
-        <Link to='/login'>Login</Link>
+        <Link to='/home'>Home</Link>
         <Link to='/register'>Register</Link>
+        <Link to='/login'>Login</Link>
+        <Link to='/logout'>Logout</Link>
+        <Link to='/posts'>Posts ({ posts.length })</Link>
+        
       </nav>
       <Routes>
         <Route path='/posts' element= { <div>{ <Posts posts={ posts } /> }</div>}/>
         <Route path='/login' element={ <div>{ <Login/> }</div>}/>
         <Route path='/register' element={ <div>{ <Register/> }</div>}/>
+        <Route path='/home' element={ <div>{ <Home/> }</div>}/>
       </Routes> 
     </div>
  
