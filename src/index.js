@@ -61,7 +61,7 @@ const Register = () => {
     throw result.error;
   }
   const token = result.data.token;
-  console.log(token);
+  console.log(token);  
 })
 .catch( err => console.log(err));
 }
@@ -115,26 +115,46 @@ const Login = () => {
         throw result.error;
       }
       const token = result.data.token;
-      fetch('https://strangers-things.herokuapp.com/api/2209-FTB-ET-WEB-AM/users/me', {
-      headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
-  })
-  .then(response => response.json())
-  .then(result => {
-    const user = result.data;
-      setUser(user);
-    })
-    .catch(console.error);
+      window.localStorage.setItem('token', token);
+      exchangeTokenForUser();
       })
       .catch( err => console.log(err));
   }
 
+  const exchangeTokenForUser = () => {
+    const token = window.localStorage.getItem('token');
+    if(token){
+      fetch('https://strangers-things.herokuapp.com/api/2209-FTB-ET-WEB-AM/users/me', {
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${ token }`
+  },
+})
+.then(response => response.json())
+  .then(result => {
+    const user = result.data;
+    setUser(user)
+  })
+  .catch(console.error);
+
+    }
+  };
+
+  useEffect( () => {
+    exchangeTokenForUser();
+  }, []);
+
+  const logout = () => {
+    window.localStorage.removeItem('token');
+    setUser({});
+  }
+
+
+
   return(
     <div>
       {
-        user._id ? <div>Welcome { user.username }!</div> : null
+        user._id ? <div>Welcome { user.username }!<button onClick={ logout }>Logout</button></div> : null
       }
     <form onSubmit= { loginBtn }>
       <input 
@@ -153,6 +173,8 @@ const Login = () => {
   </div>
   )
 }
+
+
 
 const Home = () => {
   console.log("hello");
@@ -180,7 +202,6 @@ const App = ()=> {
         <Link to='/home'>Home</Link>
         <Link to='/register'>Register</Link>
         <Link to='/login'>Login</Link>
-        <Link to='/logout'>Logout</Link>
         <Link to='/posts'>Posts ({ posts.length })</Link>
         
       </nav>
